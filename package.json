@@ -3,24 +3,28 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+  "dev": "cross-env NODE_ENV=development ts-node --project tsconfig.server.json server.ts",
+  "build": "next build",
+  "start": "cross-env NODE_ENV=production ts-node --project tsconfig.server.json server.ts",
+  "lint": "next lint"
   },
   "dependencies": {
-    "@types/react-speech-recognition": "^3.9.6",
     "next": "16.0.8",
     "react": "19.2.1",
     "react-dom": "19.2.1",
-    "react-speech-recognition": "^4.0.1"
+    "react-speech-recognition": "^4.0.1",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-speech-recognition": "^3.9.6",
+    "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.8",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }

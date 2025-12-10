@@ -1,8 +1,13 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import { io, Socket } from 'socket.io-client';
 
 export default function Home() {
+  const [hasMounted, setHasMounted] = useState(false);
+  const socketRef = useRef<Socket | null>(null);
+
   // Speech Recognition Hooks
   const {
     transcript,
@@ -13,27 +18,43 @@ export default function Home() {
 
   // Animation State
   const [isPartyTime, setIsPartyTime] = useState(false);
+  // Set mounted state on initial load
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  useEffect(() => {
+    // Connect to our server
+    const socket = io();
+    socketRef.current = socket;
+
+    // Listen for party trigger from server
+    socket.on("trigger_party", () => {
+      setIsPartyTime(true);
+      setTimeout(() => {
+        setIsPartyTime(false);
+      }, 10000);
+    });
+
+    // Cleanup on unmount
+    return () => {
+      socket.disconnect();
+    };
+  }, [])
 
   // Watch For the Magic Word
   useEffect(() => {
+    if (!transcript || isPartyTime) return;
     const spokenText = transcript?.toLowerCase() ?? "";
-    if (spokenText.includes('butts')) {
-      triggerPartyMode();
+    if (spokenText.includes('butts') && !isPartyTime) {
+      console.log("Butts Spoken! Notifying Server...");
+      socketRef.current?.emit("butts_spoken");
+      resetTranscript();
     }
-  }, [transcript]);
+  }, [isPartyTime, resetTranscript, transcript]);
 
-  const triggerPartyMode = () => {
-    if (isPartyTime) return; // Prevent multiple triggers
-    setIsPartyTime(true);
-
-    // Clear the transcript so we don't retrigger
-    resetTranscript();
-
-    // stop the party of 10 seconds
-    setTimeout(() => {
-      setIsPartyTime(false);
-    }, 10000);
-  };
+  // --- RENDERING ---
+  if (!hasMounted) return null;
 
   if (!browserSupportsSpeechRecognition) {
     return <span>Your browser does not support speech recognition.  Try Chrome.</span>;
