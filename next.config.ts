@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  reactStrictMode: false, // <-- Turn this to false for Voice Apps
 };
 
 export default nextConfig;
