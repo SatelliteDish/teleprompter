@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-  "dev": "cross-env NODE_ENV=development ts-node --project tsconfig.server.json server.ts",
-  "build": "next build",
-  "start": "cross-env NODE_ENV=production ts-node --project tsconfig.server.json server.ts",
-  "lint": "next lint"
+    "dev": "cross-env NODE_ENV=development ts-node --project tsconfig.server.json server.ts",
+    "build": "next build",
+    "start": "cross-env NODE_ENV=production ts-node --project tsconfig.server.json server.ts",
+    "lint": "next lint"
   },
   "dependencies": {
+    "@next/env": "^16.0.8",
     "next": "16.0.8",
     "react": "19.2.1",
     "react-dom": "19.2.1",
