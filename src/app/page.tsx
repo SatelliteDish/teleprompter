@@ -1,8 +1,67 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
+import React, { useEffect, useState } from 'react';
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 export default function Home() {
+  // Speech Recognition Hooks
+  const {
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition
+  } = useSpeechRecognition();
+
+  // Animation State
+  const [isPartyTime, setIsPartyTime] = useState(false);
+
+  // Watch For the Magic Word
+  useEffect(() => {
+    const spokenText = transcript?.toLowerCase() ?? "";
+    if (spokenText.includes('butts')) {
+      triggerPartyMode();
+    }
+  }, [transcript]);
+
+  const triggerPartyMode = () => {
+    if (isPartyTime) return; // Prevent multiple triggers
+    setIsPartyTime(true);
+
+    // Clear the transcript so we don't retrigger
+    resetTranscript();
+
+    // stop the party of 10 seconds
+    setTimeout(() => {
+      setIsPartyTime(false);
+    }, 10000);
+  };
+
+  if (!browserSupportsSpeechRecognition) {
+    return <span>Your browser does not support speech recognition.  Try Chrome.</span>;
+  }
+
   return (
+    <div className="App">
+      <header className={"App-header"}>
+      <p>Microphone: {listening ? 'on' : 'off'}</p>
+      {!listening && (
+        <button onClick={() => SpeechRecognition.startListening({continuous: true})}>Start Listening</button>
+      )}
+      </header>
+      <h1 className={`target-word ${isPartyTime ? 'party-time' : ''}`}>
+        Butts  
+      </h1>
+      {/*
+        Debugger, wtf am I saying
+      */}
+      <p>
+        You Said: {transcript}
+      </p>
+    </div>
+  );
+}
+
+
+  /* return (
     <div className={styles.page}>
       <main className={styles.main}>
         <Image
@@ -62,5 +121,5 @@ export default function Home() {
         </div>
       </main>
     </div>
-  );
-}
+  ); 
+} */
